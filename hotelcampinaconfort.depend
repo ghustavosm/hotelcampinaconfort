@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1542561138 source:c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\main.c
+	<gtk/gtk.h>
+	<glib/gi18n.h>
+	<locale.h>
+
