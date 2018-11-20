@@ -26,26 +26,6 @@ typedef enum {
     N_COLUMNS
 } COL_CLIENTES;
 
-/*typedef struct {
-    gchar nome = NULL, cpf = NULL, endereco = NULL;
-} CLIENTE;
-
-typedef struct {
-    gchar numero = NULL;
-    gboolean ocupado = FALSE;
-} QUARTO;
-
-typedef struct {
-    gchar descricao = NULL;
-    float preco = 0.0;
-} SERVICO;
-
-typedef struct{
-    CLIENTE cliente = NULL;
-    QUARTO quartos[] = NULL;
-    SERVICO servicos[] = NULL;
-} CONTRATO;*/
-
 static gchar *utf8(char *string) {
     return g_convert(string, -1, "UTF-8", "ISO-8859-1", NULL, NULL, NULL);
 }
