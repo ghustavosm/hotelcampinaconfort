@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include "structs.c"
 
 static gchar *utf8(char *string);
 static GtkWidget *criarJanela(GtkWidget *window, gchar *titulo, int largura, int altura);
@@ -9,9 +10,9 @@ static void janelaSobre(GSimpleAction *simple, GVariant *parameter, gpointer dat
 static void janelaClientes(GtkApplication *app, gpointer data);
 static void janelaCadastroCliente(GtkApplication *app, gpointer data);
 static void renderizarListaClientes(GtkWidget *lista_clientes);
-static void visualizarCliente(GtkApplication *app, gpointer data);
-static void removerCliente(GtkWidget *widget, gpointer selection);
-static void salvarCliente(GtkApplication *app, gpointer data);
+static void janelaVisualizarCliente(GtkApplication *app, gpointer data);
+static void acaoRemoverCliente(GtkWidget *widget, gpointer selection);
+static void acaoSalvarCliente(GtkApplication *app, gpointer data);
 static void fecharDialogo(GtkDialog *dialog, gint response_id, gpointer data);
 static void fecharJanela(GtkWidget *widget, gpointer data);
 static void sairPrograma(GSimpleAction *simple, GVariant *parameter, gpointer data);
@@ -159,9 +160,9 @@ static void janelaClientes(GtkApplication *app, gpointer data) {
     gtk_orientable_set_orientation(GTK_ORIENTABLE(hbox), GTK_ORIENTATION_HORIZONTAL);
 
     btn_adicionar = criarBotao(btn_adicionar, "Adicionar", hbox, G_CALLBACK(janelaCadastroCliente), NULL);
-    btn_remover = criarBotao(btn_remover, "Remover", hbox, G_CALLBACK(removerCliente), selection);
+    btn_remover = criarBotao(btn_remover, "Remover", hbox, G_CALLBACK(acaoRemoverCliente), selection);
     btn_editar = criarBotao(btn_editar, "Editar", hbox, G_CALLBACK(janelaCadastroCliente), selection);
-    btn_visualizar = criarBotao(btn_visualizar, "Visualizar", hbox, G_CALLBACK(visualizarCliente), selection);
+    btn_visualizar = criarBotao(btn_visualizar, "Visualizar", hbox, G_CALLBACK(janelaVisualizarCliente), selection);
     btn_fechar = criarBotao(btn_fechar, "Fechar", hbox, G_CALLBACK(fecharJanela), window);
 
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
@@ -189,15 +190,28 @@ static void renderizarListaClientes(GtkWidget *lista_clientes) {
 
     store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING); //G_TYPE_UINT
 
+    GSList *aux = NULL;
+    CLIENTE *cliente;
+    for(aux = clientes; aux != NULL; aux = aux->next) {
+        GtkTreeIter iter;
+        gtk_list_store_append (store, &iter);
+        cliente = (CLIENTE*) aux->data;
+        gtk_list_store_set(store, &iter,
+                           COL_NOME, utf8(cliente->nome),
+                           COL_CPF, cliente->cpf,
+                           COL_ENDERECO, utf8(cliente->endereco), -1);
+    }
+    g_slist_free(aux);
+
     gtk_tree_view_set_model(GTK_TREE_VIEW(lista_clientes), GTK_TREE_MODEL(store));
 
     g_object_unref(store);
 }
 
-static void visualizarCliente(GtkApplication *app, gpointer data) {
+static void janelaVisualizarCliente(GtkApplication *app, gpointer data) {
 }
 
-static void removerCliente(GtkWidget *widget, gpointer selection) {
+static void acaoRemoverCliente(GtkWidget *widget, gpointer selection) {
   GtkListStore *store;
   GtkTreeModel *model;
   GtkTreeIter  iter;
@@ -215,7 +229,7 @@ static void removerCliente(GtkWidget *widget, gpointer selection) {
   }
 }
 
-static void salvarCliente(GtkApplication *app, gpointer data) {
+static void acaoSalvarCliente(GtkApplication *app, gpointer data) {
     GtkListStore *store;
     GtkTreeIter iter;
 
@@ -273,7 +287,7 @@ static void janelaCadastroCliente(GtkApplication *app, gpointer entry) {
     gtk_table_attach(GTK_TABLE(table), endereco, 1, 2, 2, 3, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
     gtk_table_attach(GTK_TABLE(table), salvar, 1, 2, 3, 4, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
 
-    g_signal_connect(G_OBJECT(salvar), "clicked", G_CALLBACK(salvarCliente), nome);
+    g_signal_connect(G_OBJECT(salvar), "clicked", G_CALLBACK(acaoSalvarCliente), nome);
 
     gtk_widget_show_all(janela_cadastro_cliente);
 

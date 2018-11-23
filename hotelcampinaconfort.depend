@@ -1,15 +1,33 @@
 # depslib dependency file v1.0
-1542665563 source:c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\main.c
+1542945397 source:c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\main.c
 	<gtk/gtk.h>
 	<locale.h>
-	"interface.h"
+	"interface.c"
 
-1542665470 source:c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\interface.c
+1542945342 source:c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\interface.c
 	<gtk/gtk.h>
+	"structs.c"
 
 1542664061 c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\interface.h
 	"interface.c"
 
-1542670868 c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\interface.c
+1542945342 c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\interface.c
 	<gtk/gtk.h>
+	"structs.c"
+
+1542942956 source:c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\structs.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<gtk/gtk.h>
+	<gmodule.h>
+	<glib.h>
+
+1542942956 c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\structs.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<gtk/gtk.h>
+	<gmodule.h>
+	<glib.h>
 

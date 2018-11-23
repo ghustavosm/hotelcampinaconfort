@@ -37,51 +37,50 @@ typedef struct {
     GList servicos[TAM_STR];
 } CONTRATO;
 
-gboolean existeCliente(gchar cpf[]);
-gint compararClientes(CLIENTE *a, CLIENTE *b);
-gint adicionarCliente(gchar nome[], gchar cpf[], gchar endereco[]);
-gint editarCliente(gchar cpf[], gchar novo_nome[], gchar novo_cpf[], gchar novo_endereco[]);
-gint removerCliente(gchar cpf[]);
-gint salvarClientes(void);
-gint carregarClientes(void);
-void imprimirClientes(void);
-gboolean existeTipoQuarto(gchar tipo[]);
-gint compararTipoQuartos(TIPO_QUARTO *a, TIPO_QUARTO *b);
-gint adicionarTipoQuarto(gchar tipo[], gfloat valor);
-gint editarTipoQuarto(gchar tipo[], gchar novo_tipo[], gfloat novo_valor);
-gint removerTipoQuarto(gchar tipo[]);
-gint salvarTipoQuarto(void);
-gint carregarTipoQuartos(void);
-void imprimirTipoQuartos(void);
-gboolean existeQuarto(gchar numero[]);
-gint compararQuartos(QUARTO *a, QUARTO *b);
-gint adicionarQuarto(gchar numero[], gchar tipo[]);
-gint editarQuarto(gchar numero[], gchar novo_numero[], gchar novo_tipo[]);
-gint removerQuarto(gchar numero[]);
-gint totalQuartosTipo(gchar tipo[]);
-gfloat valorQuarto(gchar tipo[]);
-void reservarQuarto(gchar numero[]);
-void liberarQuarto(gchar numero[]);
-gint salvarQuarto(void);
-gint carregarQuartos(void);
-void imprimirQuartos(void);
+static gboolean existeCliente(gchar cpf[]);
+static gint compararClientes(CLIENTE *a, CLIENTE *b);
+static gint adicionarCliente(gchar nome[], gchar cpf[], gchar endereco[]);
+static gint editarCliente(gchar cpf[], gchar novo_nome[], gchar novo_cpf[], gchar novo_endereco[]);
+static gint removerCliente(gchar cpf[]);
+static gint salvarClientes(void);
+static gint carregarClientes(void);
+static void imprimirClientes(void);
+static gboolean existeTipoQuarto(gchar tipo[]);
+static gint compararTipoQuartos(TIPO_QUARTO *a, TIPO_QUARTO *b);
+static gint adicionarTipoQuarto(gchar tipo[], gfloat valor);
+static gint editarTipoQuarto(gchar tipo[], gchar novo_tipo[], gfloat novo_valor);
+static gint removerTipoQuarto(gchar tipo[]);
+static gint salvarTipoQuarto(void);
+static gint carregarTipoQuartos(void);
+static void imprimirTipoQuartos(void);
+static gboolean existeQuarto(gchar numero[]);
+static gint compararQuartos(QUARTO *a, QUARTO *b);
+static gint adicionarQuarto(gchar numero[], gchar tipo[]);
+static gint editarQuarto(gchar numero[], gchar novo_numero[], gchar novo_tipo[]);
+static gint removerQuarto(gchar numero[]);
+static gint totalQuartosTipo(gchar tipo[]);
+static gfloat valorQuarto(gchar tipo[]);
+static void reservarQuarto(gchar numero[]);
+static void liberarQuarto(gchar numero[]);
+static gint salvarQuarto(void);
+static gint carregarQuartos(void);
+static void imprimirQuartos(void);
+static gboolean existeServico(gchar tipo[]);
+static gint compararServicos(SERVICO *a, SERVICO *b);
+static gint adicionarServico(gchar tipo[], gfloat valor);
+static gint editarServico(gchar tipo[], gchar novo_tipo[], gfloat novo_valor);
+static gint removerServico(gchar tipo[]);
+static gint salvarServico(void);
+static gint carregarServicos(void);
+static void imprimirServicos(void);
 
-gboolean existeServico(gchar tipo[]);
-gint compararServicos(SERVICO *a, SERVICO *b);
-gint adicionarServico(gchar tipo[], gfloat valor);
-gint editarServico(gchar tipo[], gchar novo_tipo[], gfloat novo_valor);
-gint removerServico(gchar tipo[]);
-gint salvarServico(void);
-gint carregarServicos(void);
-void imprimirServicos(void);
+static GSList *clientes = NULL;
+static GSList *tipo_quartos = NULL;
+static GSList *quartos = NULL;
+static GSList *servicos = NULL;
+static GSList *contratos = NULL;
 
-GSList *clientes = NULL;
-GSList *tipo_quartos = NULL;
-GSList *quartos = NULL;
-GSList *servicos = NULL;
-GSList *contratos = NULL;
-
-gboolean existeCliente(gchar cpf[]) {
+static gboolean existeCliente(gchar cpf[]) {
     GSList *c = NULL;
     CLIENTE *cliente;
     gboolean existe = FALSE;
@@ -95,14 +94,14 @@ gboolean existeCliente(gchar cpf[]) {
     return existe;
 }
 
-gint compararClientes(CLIENTE *a, CLIENTE *b) {
+static gint compararClientes(CLIENTE *a, CLIENTE *b) {
     return strcmp(a->nome, b->nome);
 }
 
 /* -1 se o cliente existe
     0 se houve problema ao ler ou gravar no arquivo
     1 se adicionou o cliente com sucesso */
-gint adicionarCliente(gchar nome[], gchar cpf[], gchar endereco[]) {
+static gint adicionarCliente(gchar nome[], gchar cpf[], gchar endereco[]) {
     gint retorno = existeCliente(cpf) ? -1 : 1;
     if(retorno == 1) {
         CLIENTE *cliente = g_new(CLIENTE, 1);
@@ -119,7 +118,7 @@ gint adicionarCliente(gchar nome[], gchar cpf[], gchar endereco[]) {
    -1 se o cpf antigo não existe
     0 se houve problema ao ler ou gravar no arquivo
     1 se editou o cliente com sucesso */
-gint editarCliente(gchar cpf[], gchar novo_nome[], gchar novo_cpf[], gchar novo_endereco[]) {
+static gint editarCliente(gchar cpf[], gchar novo_nome[], gchar novo_cpf[], gchar novo_endereco[]) {
     gint retorno = novo_cpf != cpf && existeCliente(novo_cpf) ? -2 : 1;
     if(retorno == 1) {
         retorno = existeCliente(cpf) ? 1 : -1;
@@ -141,7 +140,7 @@ gint editarCliente(gchar cpf[], gchar novo_nome[], gchar novo_cpf[], gchar novo_
     return retorno;
 }
 
-gint removerCliente(gchar *cpf) {
+static gint removerCliente(gchar *cpf) {
     gint retorno = existeCliente(cpf) ? 1 : -1;
     if(retorno == 1) {
         GSList *c = NULL;
@@ -158,7 +157,7 @@ gint removerCliente(gchar *cpf) {
     return retorno;
 }
 
-gint salvarClientes(void) {
+static gint salvarClientes(void) {
     FILE *arquivo;
     GSList *c = NULL;
     CLIENTE *cliente = g_new(CLIENTE, 1);
@@ -178,7 +177,7 @@ gint salvarClientes(void) {
     return retorno;
 }
 
-gint carregarClientes(void) {
+static gint carregarClientes(void) {
     FILE *arquivo;
     CLIENTE *cliente;
     gint retorno = 1;
@@ -201,7 +200,7 @@ gint carregarClientes(void) {
     return retorno;
 }
 
-void imprimirClientes(void) {
+static void imprimirClientes(void) {
     GSList *c = NULL;
     CLIENTE *cliente;
     for(c = clientes; c != NULL; c = c->next) {
@@ -211,7 +210,7 @@ void imprimirClientes(void) {
     g_slist_free(c);
 }
 
-gboolean existeTipoQuarto(gchar tipo[]) {
+static gboolean existeTipoQuarto(gchar tipo[]) {
     GSList *tq = NULL;
     TIPO_QUARTO *tipo_quarto;
     gboolean existe = FALSE;
@@ -225,11 +224,11 @@ gboolean existeTipoQuarto(gchar tipo[]) {
     return existe;
 }
 
-gint compararTipoQuartos(TIPO_QUARTO *a, TIPO_QUARTO *b) {
+static gint compararTipoQuartos(TIPO_QUARTO *a, TIPO_QUARTO *b) {
     return strcmp(a->tipo, b->tipo);
 }
 
-gint adicionarTipoQuarto(gchar tipo[], gfloat valor) {
+static gint adicionarTipoQuarto(gchar tipo[], gfloat valor) {
     gint retorno = existeTipoQuarto(tipo) ? -1 : 1;
     if(retorno == 1) {
         TIPO_QUARTO *tipo_quarto = g_new(TIPO_QUARTO, 1);
@@ -241,7 +240,7 @@ gint adicionarTipoQuarto(gchar tipo[], gfloat valor) {
     return retorno;
 }
 
-gint editarTipoQuarto(gchar tipo[], gchar novo_tipo[], gfloat novo_valor) {
+static gint editarTipoQuarto(gchar tipo[], gchar novo_tipo[], gfloat novo_valor) {
     gint retorno = novo_tipo != tipo && existeTipoQuarto(novo_tipo) ? -2 : 1;
     if(retorno == 1) {
         retorno = existeTipoQuarto(tipo) ? 1 : -1;
@@ -262,7 +261,7 @@ gint editarTipoQuarto(gchar tipo[], gchar novo_tipo[], gfloat novo_valor) {
     return retorno;
 }
 
-gint removerTipoQuarto(gchar tipo[]) {
+static gint removerTipoQuarto(gchar tipo[]) {
     gint retorno = existeTipoQuarto(tipo) ? 1 : -2;
     if(retorno == 1) {
         retorno = totalQuartosTipo(tipo) > 0 ? -1 : 1;
@@ -282,7 +281,7 @@ gint removerTipoQuarto(gchar tipo[]) {
     return retorno;
 }
 
-gint salvarTipoQuarto(void) {
+static gint salvarTipoQuarto(void) {
     FILE *arquivo;
     GSList *tq = NULL;
     TIPO_QUARTO *tipo_quarto = g_new(TIPO_QUARTO, 1);
@@ -302,7 +301,7 @@ gint salvarTipoQuarto(void) {
     return retorno;
 }
 
-gint carregarTipoQuartos(void) {
+static gint carregarTipoQuartos(void) {
     FILE *arquivo;
     TIPO_QUARTO *tipo_quarto;
     gint retorno = 1;
@@ -325,7 +324,7 @@ gint carregarTipoQuartos(void) {
     return retorno;
 }
 
-void imprimirTipoQuartos() {
+static void imprimirTipoQuartos() {
     GSList *tq = NULL;
     TIPO_QUARTO *tipo_quarto;
     for(tq = tipo_quartos; tq != NULL; tq = tq->next) {
@@ -335,7 +334,7 @@ void imprimirTipoQuartos() {
     g_slist_free(tq);
 }
 
-gboolean existeQuarto(gchar numero[]) {
+static gboolean existeQuarto(gchar numero[]) {
     GSList *q = NULL;
     QUARTO *quarto;
     gboolean existe = FALSE;
@@ -349,11 +348,11 @@ gboolean existeQuarto(gchar numero[]) {
     return existe;
 }
 
-gint compararQuartos(QUARTO *a, QUARTO *b) {
+static gint compararQuartos(QUARTO *a, QUARTO *b) {
     return strcmp(a->numero, b->numero);
 }
 
-gint adicionarQuarto(gchar numero[], gchar tipo[]) {
+static gint adicionarQuarto(gchar numero[], gchar tipo[]) {
     gint retorno = existeQuarto(numero) ? -1 : 1;
     if(retorno == 1) {
         QUARTO *quarto = g_new(QUARTO, 1);
@@ -366,7 +365,7 @@ gint adicionarQuarto(gchar numero[], gchar tipo[]) {
     return retorno;
 }
 
-gint editarQuarto(gchar numero[], gchar novo_numero[], gchar novo_tipo[]) {
+static gint editarQuarto(gchar numero[], gchar novo_numero[], gchar novo_tipo[]) {
     gint retorno = novo_numero != numero && existeQuarto(novo_numero) ? -2 : 1;
     if(retorno == 1) {
         retorno = existeQuarto(numero) ? 1 : -1;
@@ -387,7 +386,7 @@ gint editarQuarto(gchar numero[], gchar novo_numero[], gchar novo_tipo[]) {
     return retorno;
 }
 
-gint removerQuarto(gchar numero[]) {
+static gint removerQuarto(gchar numero[]) {
     gint retorno = existeQuarto(numero) ? 1 : -1;
     if(retorno == 1) {
         GSList *q = NULL;
@@ -404,7 +403,7 @@ gint removerQuarto(gchar numero[]) {
     return retorno;
 }
 
-gint totalQuartosTipo(gchar tipo[]) {
+static gint totalQuartosTipo(gchar tipo[]) {
     GSList *q = NULL;
     QUARTO *quarto;
     int total = 0;
@@ -418,7 +417,7 @@ gint totalQuartosTipo(gchar tipo[]) {
     return total;
 }
 
-gfloat valorQuarto(gchar tipo[]) {
+static gfloat valorQuarto(gchar tipo[]) {
     GSList *tq = NULL;
     TIPO_QUARTO *tipo_quarto;
     gfloat valor = -1.0;
@@ -432,7 +431,7 @@ gfloat valorQuarto(gchar tipo[]) {
     return valor;
 }
 
-void reservarQuarto(gchar numero[]) {
+static void reservarQuarto(gchar numero[]) {
     GSList *q = NULL;
     QUARTO *quarto;
     for(q = quartos; q != NULL; q = q->next) {
@@ -444,7 +443,7 @@ void reservarQuarto(gchar numero[]) {
     g_slist_free(q);
 }
 
-void liberarQuarto(gchar numero[]) {
+static void liberarQuarto(gchar numero[]) {
     GSList *q = NULL;
     QUARTO *quarto;
     for(q = quartos; q != NULL; q = q->next) {
@@ -456,7 +455,7 @@ void liberarQuarto(gchar numero[]) {
     g_slist_free(q);
 }
 
-gint salvarQuarto(void) {
+static gint salvarQuarto(void) {
     FILE *arquivo;
     GSList *q = NULL;
     QUARTO *quarto = g_new(QUARTO, 1);
@@ -476,7 +475,7 @@ gint salvarQuarto(void) {
     return retorno;
 }
 
-gint carregarQuartos(void) {
+static gint carregarQuartos(void) {
     FILE *arquivo;
     QUARTO *quarto;
     gint retorno = 1;
@@ -499,7 +498,7 @@ gint carregarQuartos(void) {
     return retorno;
 }
 
-void imprimirQuartos(void) {
+static void imprimirQuartos(void) {
     GSList *q = NULL;
     QUARTO *quarto;
     for(q = quartos; q != NULL; q = q->next) {
@@ -509,7 +508,7 @@ void imprimirQuartos(void) {
     g_slist_free(q);
 }
 
-gboolean existeServico(gchar tipo[]) {
+static gboolean existeServico(gchar tipo[]) {
     GSList *s = NULL;
     SERVICO *servico;
     gboolean existe = FALSE;
@@ -523,11 +522,11 @@ gboolean existeServico(gchar tipo[]) {
     return existe;
 }
 
-gint compararServicos(SERVICO *a, SERVICO *b) {
+static gint compararServicos(SERVICO *a, SERVICO *b) {
     return strcmp(a->tipo, b->tipo);
 }
 
-gint adicionarServico(gchar tipo[], gfloat valor) {
+static gint adicionarServico(gchar tipo[], gfloat valor) {
     gint retorno = existeServico(tipo) ? -1 : 1;
     if(retorno == 1) {
         SERVICO *servico = g_new(SERVICO, 1);
@@ -539,7 +538,7 @@ gint adicionarServico(gchar tipo[], gfloat valor) {
     return retorno;
 }
 
-gint editarServico(gchar tipo[], gchar novo_tipo[], gfloat novo_valor) {
+static gint editarServico(gchar tipo[], gchar novo_tipo[], gfloat novo_valor) {
     gint retorno = novo_tipo != tipo && existeServico(novo_tipo) ? -2 : 1;
     if(retorno == 1) {
         retorno = existeServico(tipo) ? 1 : -1;
@@ -560,7 +559,7 @@ gint editarServico(gchar tipo[], gchar novo_tipo[], gfloat novo_valor) {
     return retorno;
 }
 
-gint removerServico(gchar tipo[]) {
+static gint removerServico(gchar tipo[]) {
     gint retorno = existeServico(tipo) ? 1 : -1;
     if(retorno == 1) {
         GSList *s = NULL;
@@ -577,7 +576,7 @@ gint removerServico(gchar tipo[]) {
     return retorno;
 }
 
-gint salvarServico(void) {
+static gint salvarServico(void) {
     FILE *arquivo;
     GSList *s = NULL;
     SERVICO *servico = g_new(SERVICO, 1);
@@ -597,7 +596,7 @@ gint salvarServico(void) {
     return retorno;
 }
 
-gint carregarServicos(void) {
+static gint carregarServicos(void) {
     FILE *arquivo;
     SERVICO *servico;
     gint retorno = 1;
@@ -620,7 +619,7 @@ gint carregarServicos(void) {
     return retorno;
 }
 
-void imprimirServicos(void) {
+static void imprimirServicos(void) {
     GSList *s = NULL;
     SERVICO *servico;
     for(s = servicos; s != NULL; s = s->next) {
