@@ -2,19 +2,90 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Release" />
+	<File name="structs.c" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="8850" topLine="79" />
+		</Cursor>
+		<Folding>
+			<Collapse line="44" />
+			<Collapse line="58" />
+			<Collapse line="62" />
+			<Collapse line="79" />
+			<Collapse line="92" />
+			<Collapse line="109" />
+			<Collapse line="128" />
+			<Collapse line="151" />
+			<Collapse line="165" />
+			<Collapse line="179" />
+			<Collapse line="183" />
+			<Collapse line="195" />
+			<Collapse line="215" />
+			<Collapse line="220" />
+			<Collapse line="239" />
+			<Collapse line="262" />
+			<Collapse line="276" />
+			<Collapse line="280" />
+			<Collapse line="294" />
+			<Collapse line="328" />
+			<Collapse line="341" />
+			<Collapse line="355" />
+			<Collapse line="361" />
+			<Collapse line="378" />
+			<Collapse line="393" />
+			<Collapse line="413" />
+			<Collapse line="436" />
+			<Collapse line="450" />
+			<Collapse line="454" />
+			<Collapse line="468" />
+			<Collapse line="471" />
+			<Collapse line="481" />
+			<Collapse line="498" />
+			<Collapse line="503" />
+			<Collapse line="522" />
+		</Folding>
+	</File>
+	<File name="main.c" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="43732" topLine="238" />
+		</Cursor>
+		<Folding>
+			<Collapse line="137" />
+			<Collapse line="153" />
+			<Collapse line="160" />
+			<Collapse line="164" />
+			<Collapse line="176" />
+			<Collapse line="180" />
+			<Collapse line="185" />
+			<Collapse line="211" />
+			<Collapse line="237" />
+			<Collapse line="256" />
+			<Collapse line="294" />
+			<Collapse line="331" />
+			<Collapse line="401" />
+			<Collapse line="435" />
+			<Collapse line="455" />
+			<Collapse line="493" />
+			<Collapse line="526" />
+			<Collapse line="586" />
+			<Collapse line="621" />
+			<Collapse line="644" />
+			<Collapse line="682" />
+			<Collapse line="715" />
+			<Collapse line="775" />
+			<Collapse line="810" />
+			<Collapse line="830" />
+			<Collapse line="906" />
+			<Collapse line="1021" />
+		</Folding>
+	</File>
 	<File name="structs.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1571" topLine="50" />
+			<Cursor1 position="1243" topLine="36" />
 		</Cursor>
 	</File>
-	<File name="main.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="quartos.dat" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="24512" topLine="18" />
-		</Cursor>
-	</File>
-	<File name="structs.c" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="806" topLine="21" />
+			<Cursor1 position="2" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

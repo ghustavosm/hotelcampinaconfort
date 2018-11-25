@@ -22,13 +22,17 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="clientes.dat" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="quartos.dat" />
+		<Unit filename="servicos.dat" />
 		<Unit filename="structs.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="structs.h" />
+		<Unit filename="tipo_quartos.dat" />
 		<Extensions>
 			<code_completion />
 			<envvars />

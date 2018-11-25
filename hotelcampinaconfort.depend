@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1543129835 source:c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\main.c
+1543182406 source:c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\main.c
 	<gtk/gtk.h>
 	<glib.h>
 	<gmodule.h>
@@ -19,7 +19,7 @@
 	<locale.h>
 	"structs.h"
 
-1543131168 source:c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\structs.c
+1543182369 source:c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\structs.c
 	<stdio.h>
 	<stdlib.h>
 	<locale.h>
@@ -37,5 +37,5 @@
 
 1543099570 source:c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\interface_clientes.c
 
-1543131176 c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\structs.h
+1543175941 c:\users\gustavo\documents\projetos\c\hotelcampinaconfort\structs.h
 

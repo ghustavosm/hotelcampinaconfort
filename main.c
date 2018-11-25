@@ -18,7 +18,6 @@ static void janelaClientes(GtkApplication *app, gpointer data);
 static void renderizarListaClientes();
 static void janelaCadastroCliente(GtkApplication *app, gpointer data);
 static void acaoSalvarCliente(GtkApplication *app, gpointer data);
-static void janelaEditarCliente(GtkApplication *app, gpointer data);
 static void acaoRemoverCliente(GtkWidget *widget, gpointer selection);
 
 static void janelaTipoQuartos(GtkApplication *app, gpointer data);
@@ -26,14 +25,30 @@ static void renderizarListaTipoQuartos();
 static void janelaCadastroTipoQuarto(GtkApplication *app, gpointer entry);
 static void acaoSalvarTipoQuarto(GtkApplication *app, gpointer data);
 static void acaoRemoverTipoQuarto(GtkWidget *widget, gpointer selection);
-static void janelaEditarTipoQuarto(GtkApplication *app, gpointer data);
-static void acaoEditarTipoQuarto(GtkApplication *app, gpointer data);
+
+static void janelaServicos(GtkApplication *app, gpointer data);
+static void renderizarListaServicos();
+static void janelaCadastroServico(GtkApplication *app, gpointer selection);
+static void acaoSalvarServico(GtkApplication *app, gpointer data);
+static void acaoRemoverServico(GtkWidget *widget, gpointer selection);
+
+static void janelaQuartos(GtkApplication *app, gpointer data);
+static void renderizarListaQuartos();
+static void janelaCadastroQuarto(GtkApplication *app, gpointer selection);
+static void acaoSalvarQuarto(GtkApplication *app, gpointer data);
+static void acaoRemoverQuarto(GtkWidget *widget, gpointer selection);
 
 static GtkWidget *janela_cadastro_cliente = NULL;
 static GtkWidget *lista_clientes = NULL;
 
 static GtkWidget *janela_cadastro_tipo_quartos = NULL;
 static GtkWidget *lista_tipo_quartos = NULL;
+
+static GtkWidget *janela_cadastro_quarto = NULL;
+static GtkWidget *lista_quartos = NULL;
+
+static GtkWidget *janela_cadastro_servico = NULL;
+static GtkWidget *lista_servicos = NULL;
 
 typedef enum {
     COL_NOME_C = 0,
@@ -48,15 +63,61 @@ typedef enum {
     N_COLUMNS_TQ
 } COL_TIPO_QUARTOS;
 
+typedef enum {
+    COL_NUMERO_Q = 0,
+    COL_TIPO_Q,
+    COL_PRECO_Q,
+    N_COLUMNS_Q
+} COL_QUARTOS;
+
+typedef enum {
+    COL_TIPO_S = 0,
+    COL_PRECO_S,
+    N_COLUMNS_S
+} COL_SERVICOS;
+
 int main(int argc, char **argv) {
+    setlocale(LC_ALL, "");
+
     int status;
     GtkApplication *app;
     GList *icons = NULL;
 
-    carregarClientes();
-    carregarTipoQuartos();
-    carregarQuartos();
-    carregarServicos();
+    printf("%s\n", carregarClientes() == 1 ? "Clientes carregados com sucesso!" : "Não foi possível carregar os quartos!");
+    printf("%s\n", carregarTipoQuartos() == 1 ? "Tipo quartos carregados com sucesso!" : "Não foi possível carregar os quartos!");
+    printf("%s\n", carregarQuartos() == 1 ? "Quartos carregados com sucesso!" : "Não foi possível carregar os quartos!");
+    printf("%s\n", carregarServicos() == 1 ? "Servicos carregados com sucesso!" : "Não foi possível carregar os quartos!");
+
+    /*adicionarCliente("Gustavo Silva", "75429843067", "Rua Manuel Leonardo Gomes");
+    adicionarCliente("Larissa Guimarães", "52901248020", "Rua Henry Leandro Leonardo Dias");
+    adicionarCliente("Tiago Medeiros", "17745320003", "Rua Levi César Aparício");
+    adicionarCliente("João Augusto", "91646177002", "Rua Martin Caio Souza");
+    adicionarCliente("Irisnete Maria", "04513040041", "Rua Bruno Pedro Caleb Campos");
+    adicionarCliente("José Samuel", "72389066003", "Rua Luís Bernardo da Mota");
+    adicionarCliente("Lucas Gabriel", "89773759083", "Rua Yago Otávio Lopes");
+    adicionarCliente("Fátima Passos", "19753735043", "Rua Aprígio Nepomuceno");
+    adicionarCliente("Thamara Sales", "29753735043", "Rua Aprígio Nepomuceno");
+
+    adicionarTipoQuarto("Bronze", 90);
+    adicionarTipoQuarto("Prata", 130);
+    adicionarTipoQuarto("Ouro", 180);
+    adicionarTipoQuarto("Platina", 250);
+    adicionarTipoQuarto("Diamante", 250);
+
+    adicionarQuarto("301", "Platina");
+    adicionarQuarto("101", "Bronze");
+    adicionarQuarto("207", "Platina");
+    adicionarQuarto("001", "Prata");
+    adicionarQuarto("405", "Ouro");
+    adicionarQuarto("302", "Bronze");
+    adicionarQuarto("507", "Bronze");
+
+    adicionarServico("Aluguel de carro de luxo", 300);
+    adicionarServico("Seguro para carro de luxo", 100);
+    adicionarServico("Aluguel de carro executivo", 150);
+    adicionarServico("Seguro para carro executivo", 100);
+    adicionarServico("Tanque cheio", 300);
+    adicionarServico("Babysitter", 100);*/
 
     icons = g_list_append(icons, gdk_pixbuf_new_from_file("./img/icon-16.png", NULL));
     icons = g_list_append(icons, gdk_pixbuf_new_from_file("./img/icon-32.png", NULL));
@@ -139,8 +200,8 @@ static void janelaPrincipal(GtkApplication *app, gpointer data) {
 
     btn_clientes = criarBotao(btn_clientes, "Clientes", box, G_CALLBACK(janelaClientes), NULL);
     btn_contratos = criarBotao(btn_contratos, "Contratos", box, G_CALLBACK(janelaClientes), NULL);
-    btn_quartos = criarBotao(btn_quartos, "Quartos", box, G_CALLBACK(janelaClientes), NULL);
-    btn_servicos = criarBotao(btn_servicos, "Serviços", box, G_CALLBACK(janelaClientes), NULL);
+    btn_quartos = criarBotao(btn_quartos, "Quartos", box, G_CALLBACK(janelaQuartos), NULL);
+    btn_servicos = criarBotao(btn_servicos, "Serviços", box, G_CALLBACK(janelaServicos), NULL);
     btn_sair = criarBotao(btn_sair, "Sair", box, G_CALLBACK(fecharJanela), window);
 
     gtk_container_add(GTK_CONTAINER(window), box);
@@ -573,7 +634,407 @@ static void acaoRemoverTipoQuarto(GtkWidget *widget, gpointer selection) {
 
     if(gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model, &iter)) {
         gtk_tree_model_get(store, &iter, COL_TIPO_TQ, &tipo,  -1);
+        if(removerTipoQuarto(tipo) == 1) {
+            gtk_list_store_remove(store, &iter);
+        } else {
+            mostrarMensagem("Não foi possível remover o tipo de quarto, pois existem quartos cadastrados com este tipo.");
+        }
+    }
+}
+
+static void janelaServicos(GtkApplication *app, gpointer data) {
+    GtkTreeSelection *selection;
+    GtkWidget *window = NULL;
+    GtkWidget *scroll_window;
+    GtkWidget *vbox, *hbox;
+    GtkWidget *btn_adicionar = NULL, *btn_remover = NULL, *btn_editar = NULL, *btn_fechar = NULL;
+
+    window = criarJanela(window, "Serviços", 470, 370);
+    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
+
+    lista_servicos = gtk_tree_view_new();
+    gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lista_servicos), TRUE);
+    renderizarListaServicos();
+    selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lista_servicos));
+
+    scroll_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll_window), GTK_SHADOW_ETCHED_IN);
+    gtk_container_add(GTK_CONTAINER(scroll_window), lista_servicos);
+
+    vbox = gtk_box_new(FALSE, 0);
+    gtk_orientable_set_orientation(GTK_ORIENTABLE(vbox), GTK_ORIENTATION_VERTICAL);
+    gtk_box_pack_start(GTK_BOX(vbox), scroll_window, TRUE, TRUE, 5);
+
+    hbox = gtk_box_new(FALSE, 5);
+    gtk_orientable_set_orientation(GTK_ORIENTABLE(hbox), GTK_ORIENTATION_HORIZONTAL);
+
+    btn_adicionar = criarBotao(btn_adicionar, "Adicionar", hbox, G_CALLBACK(janelaCadastroServico), NULL);
+    btn_remover = criarBotao(btn_remover, "Remover", hbox, G_CALLBACK(acaoRemoverServico), selection);
+    btn_editar = criarBotao(btn_editar, "Editar", hbox, G_CALLBACK(janelaCadastroServico), selection);
+    btn_fechar = criarBotao(btn_fechar, "Fechar", hbox, G_CALLBACK(fecharJanela), window);
+
+    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
+    gtk_container_add(GTK_CONTAINER(window), vbox);
+
+    gtk_widget_show_all(window);
+}
+
+static void renderizarListaServicos() {
+    GtkCellRenderer *renderer;
+    GtkTreeViewColumn *col_tipo, *col_preco;
+    GtkListStore *store;
+    GSList *aux = NULL;
+    SERVICO *servico;
+
+    renderer = gtk_cell_renderer_text_new();
+    col_tipo = gtk_tree_view_column_new_with_attributes("Tipo", renderer, "text", COL_TIPO_S, NULL);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(lista_servicos), col_tipo);
+
+    renderer = gtk_cell_renderer_text_new();
+    col_preco = gtk_tree_view_column_new_with_attributes("Preço", renderer, "text", COL_PRECO_S, NULL);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(lista_servicos), col_preco);
+
+    store = gtk_list_store_new(N_COLUMNS_S, G_TYPE_STRING, G_TYPE_STRING);
+
+    gchar preco[10] = "";
+    for(aux = servicos; aux != NULL; aux = aux->next) {
+        GtkTreeIter iter;
+        gtk_list_store_append(store, &iter);
+        servico = (SERVICO*) aux->data;
+        sprintf(preco, "R$ %.2f", servico->valor);
+        gtk_list_store_set(store, &iter,
+                           COL_TIPO_S, servico->tipo,
+                           COL_PRECO_S, preco, -1);
+    }
+
+    g_slist_free(aux);
+    gtk_tree_view_set_model(GTK_TREE_VIEW(lista_servicos), GTK_TREE_MODEL(store));
+    g_object_unref(store);
+}
+
+static void janelaCadastroServico(GtkApplication *app, gpointer selection) {
+    GtkListStore *store;
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+    GtkWidget *table;
+    GtkWidget *label_tipo;
+    GtkWidget *label_preco;
+    GtkWidget *label_salvar;
+    GtkWidget *tipo;
+    GtkWidget *preco;
+    gchar *tipo_value;
+    gchar preco_value[15];
+
+    janela_cadastro_servico = NULL;
+
+    janela_cadastro_servico = criarJanela(janela_cadastro_servico, "Cadastro de Serviços", 0, 0);
+    gtk_container_set_border_width(GTK_CONTAINER(janela_cadastro_servico), 10);
+
+    table = gtk_table_new(3, 2, FALSE);
+    gtk_container_add(GTK_CONTAINER(janela_cadastro_servico), table);
+
+    label_tipo = gtk_label_new("Tipo");
+    label_preco = gtk_label_new("Preço");
+    label_salvar = gtk_label_new("");
+
+    gtk_table_attach(GTK_TABLE(table), label_tipo, 0, 1, 0, 1, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
+    gtk_table_attach(GTK_TABLE(table), label_preco, 0, 1, 1, 2, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
+    gtk_table_attach(GTK_TABLE(table), label_salvar, 0, 1, 2, 3, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
+
+    tipo = gtk_entry_new();
+    preco = gtk_entry_new();
+
+    if(selection != NULL) {
+        store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(lista_servicos)));
+        model = gtk_tree_view_get_model(GTK_TREE_VIEW(lista_servicos));
+        if(gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model, &iter)) {
+            gtk_tree_model_get(store, &iter, COL_TIPO_S, &tipo_value,  -1);
+        }
+        sprintf(preco_value, "%.2f", pegarServico(tipo_value)->valor);
+        gtk_entry_set_text(tipo, tipo_value);
+        gtk_entry_set_text(preco, preco_value);
+    }
+
+    GtkWidget *salvar;
+    salvar = gtk_button_new_with_label("Salvar");
+
+    gtk_table_attach(GTK_TABLE(table), tipo, 1, 2, 0, 1, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
+    gtk_table_attach(GTK_TABLE(table), preco, 1, 2, 1, 2, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
+    gtk_table_attach(GTK_TABLE(table), salvar, 1, 2, 2, 3, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
+
+    GSList *fields = NULL;
+    fields = g_slist_append(fields, selection);
+    fields = g_slist_append(fields, tipo);
+    fields = g_slist_append(fields, preco);
+
+    g_signal_connect(G_OBJECT(salvar), "clicked", G_CALLBACK(acaoSalvarServico), fields);
+
+    gtk_widget_show_all(janela_cadastro_servico);
+}
+
+static void acaoSalvarServico(GtkApplication *app, gpointer data) {
+    GtkListStore *store;
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+    gchar *tipo_tmp;
+    gint retorno;
+
+    gpointer *selection = g_slist_nth_data(data, 0);
+    gchar *tipo = gtk_entry_get_text(g_slist_nth_data(data, 1));
+    gfloat preco = atof(gtk_entry_get_text(g_slist_nth_data(data, 2)));
+
+    store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(lista_servicos)));
+
+    if(selection != NULL) {
+        model = gtk_tree_view_get_model(GTK_TREE_VIEW(lista_servicos));
+        if(gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model, &iter)) {
+            gtk_tree_model_get(store, &iter, COL_TIPO_S, &tipo_tmp,  -1);
+            gtk_list_store_remove(store, &iter);
+            removerServico(tipo_tmp);
+        }
+    }
+
+    gchar preco_str[10] = "";
+    if((retorno = adicionarServico(tipo, preco)) == 1) {
+        sprintf(preco_str, "R$ %.2f", preco);
+        gtk_list_store_insert(store, &iter, posicaoServico(tipo));
+        gtk_list_store_set(store, &iter, COL_TIPO_S, tipo, -1);
+        gtk_list_store_set(store, &iter, COL_PRECO_S, preco_str, -1);
+    } else {
+        mostrarMensagem("Não foi possível cadastrar o tipo de quarto, pois já existe outro do mesmo tipo.");
+    }
+
+    fecharJanela(NULL, janela_cadastro_servico);
+}
+
+static void acaoRemoverServico(GtkWidget *widget, gpointer selection) {
+    GtkListStore *store;
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+    gchar *tipo;
+
+    store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(lista_servicos)));
+    model = gtk_tree_view_get_model(GTK_TREE_VIEW(lista_servicos));
+
+    if(gtk_tree_model_get_iter_first(model, &iter) == FALSE) {
+        return;
+    }
+
+    if(gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model, &iter)) {
+        gtk_tree_model_get(store, &iter, COL_TIPO_S, &tipo,  -1);
         gtk_list_store_remove(store, &iter);
-        removerTipoQuarto(tipo);
+        removerServico(tipo);
+    }
+}
+
+static void janelaQuartos(GtkApplication *app, gpointer data) {
+    GtkTreeSelection *selection;
+    GtkWidget *window = NULL;
+    GtkWidget *scroll_window;
+    GtkWidget *vbox, *hbox;
+    GtkWidget *btn_adicionar = NULL, *btn_remover = NULL, *btn_editar = NULL, *btn_fechar = NULL;
+
+    window = criarJanela(window, "Quartos", 470, 370);
+    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
+
+    lista_quartos = gtk_tree_view_new();
+    gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lista_quartos), TRUE);
+    renderizarListaQuartos();
+    selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lista_quartos));
+
+    scroll_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll_window), GTK_SHADOW_ETCHED_IN);
+    gtk_container_add(GTK_CONTAINER(scroll_window), lista_quartos);
+
+    vbox = gtk_box_new(FALSE, 0);
+    gtk_orientable_set_orientation(GTK_ORIENTABLE(vbox), GTK_ORIENTATION_VERTICAL);
+    gtk_box_pack_start(GTK_BOX(vbox), scroll_window, TRUE, TRUE, 5);
+
+    hbox = gtk_box_new(FALSE, 5);
+    gtk_orientable_set_orientation(GTK_ORIENTABLE(hbox), GTK_ORIENTATION_HORIZONTAL);
+
+    btn_adicionar = criarBotao(btn_adicionar, "Adicionar", hbox, G_CALLBACK(janelaCadastroQuarto), NULL);
+    btn_remover = criarBotao(btn_remover, "Remover", hbox, G_CALLBACK(acaoRemoverQuarto), selection);
+    btn_editar = criarBotao(btn_editar, "Editar", hbox, G_CALLBACK(janelaCadastroQuarto), selection);
+    btn_fechar = criarBotao(btn_fechar, "Fechar", hbox, G_CALLBACK(fecharJanela), window);
+
+    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
+    gtk_container_add(GTK_CONTAINER(window), vbox);
+
+    gtk_widget_show_all(window);
+}
+
+static void renderizarListaQuartos() {
+    GtkCellRenderer *renderer;
+    GtkTreeViewColumn *col_numero, *col_tipo, *col_preco;
+    GtkListStore *store;
+    GSList *aux = NULL;
+    QUARTO *quarto;
+
+    renderer = gtk_cell_renderer_text_new();
+    col_numero = gtk_tree_view_column_new_with_attributes("Número", renderer, "text", COL_NUMERO_Q, NULL);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(lista_quartos), col_numero);
+
+    renderer = gtk_cell_renderer_text_new();
+    col_tipo = gtk_tree_view_column_new_with_attributes("Tipo", renderer, "text", COL_TIPO_Q, NULL);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(lista_quartos), col_tipo);
+
+    renderer = gtk_cell_renderer_text_new();
+    col_preco = gtk_tree_view_column_new_with_attributes("Preço", renderer, "text", COL_PRECO_Q, NULL);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(lista_quartos), col_preco);
+
+    store = gtk_list_store_new(N_COLUMNS_Q, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+
+    gchar preco[10] = "";
+    for(aux = quartos; aux != NULL; aux = aux->next) {
+        GtkTreeIter iter;
+        gtk_list_store_append(store, &iter);
+        quarto = (QUARTO*) aux->data;
+        sprintf(preco, "R$ %.2f", valorQuarto(quarto->numero));
+        gtk_list_store_set(store, &iter,
+                           COL_NUMERO_Q, quarto->numero,
+                           COL_TIPO_Q, quarto->tipo,
+                           COL_PRECO_Q, preco, -1);
+    }
+
+    g_slist_free(aux);
+    gtk_tree_view_set_model(GTK_TREE_VIEW(lista_quartos), GTK_TREE_MODEL(store));
+    g_object_unref(store);
+}
+
+static void janelaCadastroQuarto(GtkApplication *app, gpointer selection) {
+    GtkListStore *store;
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+    GtkWidget *table;
+    GtkWidget *label_numero;
+    GtkWidget *label_tipo;
+    GtkWidget *label_salvar;
+    GtkWidget *numero;
+    GtkWidget *tipo;
+    GtkWidget *combo;
+    gchar *numero_value;
+    gchar *tipo_value;
+
+    janela_cadastro_quarto = NULL;
+
+    janela_cadastro_quarto = criarJanela(janela_cadastro_quarto, "Cadastro de Quartos", 0, 0);
+    gtk_container_set_border_width(GTK_CONTAINER(janela_cadastro_quarto), 10);
+
+    table = gtk_table_new(3, 2, FALSE);
+    gtk_container_add(GTK_CONTAINER(janela_cadastro_quarto), table);
+
+    label_numero = gtk_label_new("Número");
+    label_tipo = gtk_label_new("Tipo");
+    label_salvar = gtk_label_new("");
+
+    gtk_table_attach(GTK_TABLE(table), label_numero, 0, 1, 0, 1, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
+    gtk_table_attach(GTK_TABLE(table), label_tipo, 0, 1, 1, 2, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
+    gtk_table_attach(GTK_TABLE(table), label_salvar, 0, 1, 2, 3, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
+
+    numero = gtk_entry_new();
+    //tipo = gtk_entry_new();
+
+
+
+    tipo = gtk_combo_box_text_new();
+
+    GSList *tq = NULL;
+    TIPO_QUARTO *tipo_quarto;
+    for(tq = tipo_quartos; tq != NULL; tq = tq->next) {
+        tipo_quarto = (TIPO_QUARTO*) tq->data;
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(tipo), tipo_quarto->tipo);
+    }
+    g_slist_free(tq);
+
+
+
+
+
+    if(selection != NULL) {
+        store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(lista_quartos)));
+        model = gtk_tree_view_get_model(GTK_TREE_VIEW(lista_quartos));
+        if(gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model, &iter)) {
+            gtk_tree_model_get(store, &iter, COL_NUMERO_Q, &numero_value,  -1);
+            gtk_tree_model_get(store, &iter, COL_TIPO_Q, &tipo_value,  -1);
+        }
+        gtk_entry_set_text(numero, numero_value);
+        gtk_combo_box_set_active(GTK_COMBO_BOX(tipo), posicaoTipoQuarto(tipo_value));
+    } else {
+        gtk_combo_box_set_active(GTK_COMBO_BOX(tipo), 0);
+    }
+
+    GtkWidget *salvar;
+    salvar = gtk_button_new_with_label("Salvar");
+
+    gtk_table_attach(GTK_TABLE(table), numero, 1, 2, 0, 1, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
+    gtk_table_attach(GTK_TABLE(table), tipo, 1, 2, 1, 2, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
+    gtk_table_attach(GTK_TABLE(table), salvar, 1, 2, 2, 3, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 5, 5);
+
+    GSList *fields = NULL;
+    fields = g_slist_append(fields, selection);
+    fields = g_slist_append(fields, numero);
+    fields = g_slist_append(fields, tipo);
+
+    g_signal_connect(G_OBJECT(salvar), "clicked", G_CALLBACK(acaoSalvarQuarto), fields);
+
+    gtk_widget_show_all(janela_cadastro_quarto);
+}
+
+static void acaoSalvarQuarto(GtkApplication *app, gpointer data) {
+    GtkListStore *store;
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+    gchar *numero_tmp;
+    gint retorno;
+
+    gpointer *selection = g_slist_nth_data(data, 0);
+    gchar *numero = gtk_entry_get_text(g_slist_nth_data(data, 1));
+    gchar *tipo = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(g_slist_nth_data(data, 2)));
+
+    store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(lista_quartos)));
+
+    if(selection != NULL) {
+        model = gtk_tree_view_get_model(GTK_TREE_VIEW(lista_quartos));
+        if(gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model, &iter)) {
+            gtk_tree_model_get(store, &iter, COL_NUMERO_Q, &numero_tmp,  -1);
+            gtk_list_store_remove(store, &iter);
+            removerQuarto(numero_tmp);
+        }
+    }
+
+    gchar preco[10] = "";
+    sprintf(preco, "R$ %.2f", valorTipoQuarto(tipo));
+    if((retorno = adicionarQuarto(numero, tipo)) == 1) {
+        gtk_list_store_insert(store, &iter, posicaoQuarto(numero));
+        gtk_list_store_set(store, &iter, COL_NUMERO_Q, numero, -1);
+        gtk_list_store_set(store, &iter, COL_TIPO_Q, tipo, -1);
+        gtk_list_store_set(store, &iter, COL_PRECO_Q, preco, -1);
+    } else {
+        mostrarMensagem("Não foi possível cadastrar o quarto, pois já existe outro com mesmo número.");
+    }
+
+    fecharJanela(NULL, janela_cadastro_quarto);
+}
+
+static void acaoRemoverQuarto(GtkWidget *widget, gpointer selection) {
+    GtkListStore *store;
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+    gchar *numero;
+
+    store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(lista_quartos)));
+    model = gtk_tree_view_get_model(GTK_TREE_VIEW(lista_quartos));
+
+    if(gtk_tree_model_get_iter_first(model, &iter) == FALSE) {
+        return;
+    }
+
+    if(gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model, &iter)) {
+        gtk_tree_model_get(store, &iter, COL_NUMERO_Q, &numero,  -1);
+        gtk_list_store_remove(store, &iter);
+        printf("%d\n", removerQuarto(numero));
     }
 }
