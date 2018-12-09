@@ -83,10 +83,13 @@ int main(int argc, char **argv) {
     GtkApplication *app;
     GList *icons = NULL;
 
-    printf("%s\n", carregarClientes() == 1 ? "Clientes carregados com sucesso!" : "Não foi possível carregar os quartos!");
-    printf("%s\n", carregarTipoQuartos() == 1 ? "Tipo quartos carregados com sucesso!" : "Não foi possível carregar os quartos!");
+    printf("%s\n", carregarClientes() == 1 ? "Clientes carregados com sucesso!" : "Não foi possível carregar os clientes!");
+    printf("%s\n", carregarTipoQuartos() == 1 ? "Tipo quartos carregados com sucesso!" : "Não foi possível carregar os tipos de quartos!");
     printf("%s\n", carregarQuartos() == 1 ? "Quartos carregados com sucesso!" : "Não foi possível carregar os quartos!");
-    printf("%s\n", carregarServicos() == 1 ? "Servicos carregados com sucesso!" : "Não foi possível carregar os quartos!");
+    printf("%s\n", carregarReservas() == 1 ? "Reservas carregadas com sucesso!" : "Não foi possível carregar as reservas!");
+    printf("%s\n", carregarServicos() == 1 ? "Servicos carregados com sucesso!" : "Não foi possível carregar os servicos!");
+    printf("%s\n", carregarServicosContratados() == 1 ? "Servicos contratados carregados com sucesso!" : "Não foi possível carregar os servicos contratados!");
+    //printf("%s\n", carregarContratos() == 1 ? "Contratos carregados com sucesso!" : "Não foi possível carregar os contratos!");
 
     /*adicionarCliente("Gustavo Silva", "75429843067", "Rua Manuel Leonardo Gomes");
     adicionarCliente("Larissa Guimarães", "52901248020", "Rua Henry Leandro Leonardo Dias");
@@ -118,6 +121,37 @@ int main(int argc, char **argv) {
     adicionarServico("Seguro para carro executivo", 100);
     adicionarServico("Tanque cheio", 300);
     adicionarServico("Babysitter", 100);*/
+
+    DATA reserva_inicio = {2, 3, 2013};
+    DATA reserva_fim = {5, 3, 2013};
+
+    /*reservarQuarto("75429843067", "101", reserva_inicio, reserva_fim);*/
+    /*reservarQuarto("75429843067", "101", (DATA) {2, 3, 2013}, (DATA) {5, 3, 2013});*/
+
+    RESERVA *reserva = pegarReserva("75429843067", "101");
+    printf("%d/%d/%d\n", reserva->inicio.dia, reserva->inicio.mes, reserva->inicio.ano);
+    printf("%d/%d/%d\n", reserva->fim.dia, reserva->fim.mes, reserva->fim.ano);
+
+    liberarQuarto("101", reserva_inicio, reserva_fim);
+    printf("%s\n", disponibilidadeQuarto("101", reserva_inicio, reserva_fim) ? "Disponivel" : "Nao disponivel");
+
+    /*GSList *datas = gerarDatas(reserva_inicio, reserva_fim);
+    DATA *data_aux;
+    GSList *d = NULL;
+    for(d = datas; d != NULL; d = d->next) {
+        data_aux = (DATA*) d->data;
+        printf("%d/%d/%d\n", data_aux->dia, data_aux->mes, data_aux->ano);
+    }*/
+
+    //printf("%s\n", criarContrato("75429843067", "101", reserva_inicio, reserva_fim) == 1 ? "Contrato criado com sucesso!" : "Erro ao criar contrato!");
+
+
+    //adicionarServicoContratado("75429843067", "Aluguel de carro de luxo", 1);
+    //adicionarServicoContratado("75429843067", "Tanque cheio", 1);
+
+    //SERVICO_CONTRATADO *servico_c = pegarServicoContratado("75429843067", "Tanque cheio");
+    //alterarServicoContratado("75429843067", "Tanque cheio", 2);
+    //printf("%s %s %d\n", servico_c->cpf, servico_c->tipo, servico_c->quantidade);
 
     icons = g_list_append(icons, gdk_pixbuf_new_from_file("./img/icon-16.png", NULL));
     icons = g_list_append(icons, gdk_pixbuf_new_from_file("./img/icon-32.png", NULL));
@@ -211,18 +245,39 @@ static void janelaPrincipal(GtkApplication *app, gpointer data) {
 
 static void barraDeMenu(GApplication *app, gpointer data) {
     GMenu *menu;
+    GMenu *cadastro;
+    GSimpleAction *btn_clientes;
     GSimpleAction *btn_tipo_quartos;
+    GSimpleAction *btn_quartos;
+    GSimpleAction *btn_servicos;
     GSimpleAction *btn_sobre;
     GSimpleAction *btn_sair;
 
     menu = g_menu_new();
-    g_menu_append(menu, "Tipo de Quartos", "app.tipo_quartos");
+    cadastro = g_menu_new();
+    g_menu_append_submenu(menu, "Cadastro", cadastro);
+    g_menu_append(cadastro, "Clientes", "app.clientes");
+    g_menu_append(cadastro, "Tipo de Quartos", "app.tipo_quartos");
+    g_menu_append(cadastro, "Quartos", "app.quartos");
+    g_menu_append(cadastro, "Serviços", "app.servicos");
     g_menu_append(menu, "Sobre", "app.sobre");
     g_menu_append(menu, "Sair", "app.sair");
+
+    btn_clientes = g_simple_action_new("clientes", NULL);
+    g_signal_connect(btn_clientes, "activate", G_CALLBACK(janelaClientes), app);
+    g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(btn_clientes));
 
     btn_tipo_quartos = g_simple_action_new("tipo_quartos", NULL);
     g_signal_connect(btn_tipo_quartos, "activate", G_CALLBACK(janelaTipoQuartos), app);
     g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(btn_tipo_quartos));
+
+    btn_quartos = g_simple_action_new("quartos", NULL);
+    g_signal_connect(btn_quartos, "activate", G_CALLBACK(janelaQuartos), app);
+    g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(btn_quartos));
+
+    btn_servicos = g_simple_action_new("servicos", NULL);
+    g_signal_connect(btn_servicos, "activate", G_CALLBACK(janelaServicos), app);
+    g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(btn_servicos));
 
     btn_sobre = g_simple_action_new("sobre", NULL);
     g_signal_connect(btn_sobre, "activate", G_CALLBACK(janelaSobre), app);

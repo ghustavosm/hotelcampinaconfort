@@ -8,10 +8,23 @@ typedef struct {
 } TIPO_QUARTO;
 
 typedef struct {
+    gint dia;
+    gint mes;
+    gint ano;
+} DATA;
+
+typedef struct {
     gchar numero[10];
     gchar tipo[30];
     gchar reservas[740][11];
 } QUARTO;
+
+typedef struct {
+    gchar quarto[10];
+    gchar cpf[20];
+    DATA inicio;
+    DATA fim;
+} RESERVA;
 
 typedef struct {
     gchar tipo[30];
@@ -20,9 +33,18 @@ typedef struct {
 
 typedef struct {
     gchar cpf[20];
-    gchar quartos[100][10];
-    gchar servicos[2][100][30];
+    gchar tipo[30];
+    gint quantidade;
+} SERVICO_CONTRATADO;
+
+typedef struct {
+    gchar cpf[20];
+    gchar quarto;
+    DATA inicio;
+    DATA fim;
 } CONTRATO;
+
+gint diaDoAno(int dia, int mes, int ano);
 
 CLIENTE *pegarCliente(gchar cpf[]);
 gint compararClientes(CLIENTE *a, CLIENTE *b);
@@ -48,11 +70,15 @@ gint adicionarQuarto(gchar numero[], gchar tipo[]);
 gint removerQuarto(gchar numero[]);
 gint totalQuartosTipo(gchar tipo[]);
 gfloat valorQuarto(gchar numero[]);
-gboolean disponibilidadeQuarto(gchar numero[], gchar data[]);
-gboolean reservarQuarto(gchar numero[], gchar data[]);
-gboolean liberarQuarto(gchar numero[], gchar data[]);
 gint salvarQuartos(void);
 gint carregarQuartos(void);
+
+RESERVA *pegarReserva(gchar cpf[], gchar quarto[]);
+gint reservarQuarto(gchar cpf[], gchar quarto[], DATA inicio, DATA fim);
+gboolean disponibilidadeQuarto(gchar numero[], DATA inicio, DATA fim);
+gint liberarQuarto(gchar quarto[], DATA inicio, DATA fim);
+gint salvarReservas(void);
+gint carregarReservas(void);
 
 SERVICO *pegarServico(gchar tipo[]);
 gint adicionarServico(gchar tipo[], gfloat valor);
@@ -62,8 +88,16 @@ gint salvarServicos(void);
 gint carregarServicos(void);
 void imprimirServicos(void);
 
+/*CONTRATO *pegarContrato(gchar cpf[]);
+gint criarContrato(gchar cpf[], gchar quarto[], DATA inicio, DATA fim);
+gint terminarContrato(gchar cpf[], gchar quarto[], DATA inicio, DATA fim);
+gint salvarContratos(void);
+gint carregarContratos(void);*/
+
 GSList *clientes;
 GSList *tipo_quartos;
 GSList *quartos;
+GSList *reservas;
 GSList *servicos;
+GSList *servicos_contratados;
 GSList *contratos;
