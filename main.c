@@ -49,6 +49,10 @@ static void janelaCheckout(GtkApplication *app, gpointer data);
 static void janelaFazerCheckout(GtkApplication *app, gpointer selection);
 static void acaoFazerCheckout(GtkApplication *app, gpointer data);
 
+static void janelaContratarServicos(GtkApplication *app, gpointer data);
+static void janelaContratarServico(GtkApplication *app, gpointer selection);
+static void acaoContratarServico(GtkApplication *app, gpointer data);
+
 static GtkWidget *janela_cadastro_cliente = NULL;
 static GtkWidget *lista_clientes = NULL;
 
@@ -65,6 +69,8 @@ static GtkWidget *janela_checkin = NULL;
 static GtkWidget *lista_checkin = NULL;
 
 static GtkWidget *janela_checkout = NULL;
+
+static GtkWidget *janela_contratar_servico = NULL;
 
 typedef enum {
     COL_NOME_C = 0,
@@ -114,7 +120,6 @@ int main(int argc, char **argv) {
     printf("%s\n", carregarReservas() == 1 ? "Reservas carregadas com sucesso!" : "Não foi possível carregar as reservas!");
     printf("%s\n", carregarServicos() == 1 ? "Servicos carregados com sucesso!" : "Não foi possível carregar os servicos!");
     printf("%s\n", carregarServicosContratados() == 1 ? "Servicos contratados carregados com sucesso!" : "Não foi possível carregar os servicos contratados!");
-    //printf("%s\n", carregarContratos() == 1 ? "Contratos carregados com sucesso!" : "Não foi possível carregar os contratos!");
 
     /*adicionarCliente("Gustavo Silva", "75429843067", "Rua Manuel Leonardo Gomes");
     adicionarCliente("Larissa Guimarães", "52901248020", "Rua Henry Leandro Leonardo Dias");
@@ -126,65 +131,34 @@ int main(int argc, char **argv) {
     adicionarCliente("Fátima Passos", "19753735043", "Rua Aprígio Nepomuceno");
     adicionarCliente("Thamara Sales", "29753735043", "Rua Aprígio Nepomuceno");
 
-    adicionarTipoQuarto("Bronze", 90);
-    adicionarTipoQuarto("Prata", 130);
-    adicionarTipoQuarto("Ouro", 180);
-    adicionarTipoQuarto("Platina", 250);
-    adicionarTipoQuarto("Diamante", 250);
+    adicionarTipoQuarto("Solteiro", 90);
+    adicionarTipoQuarto("Duplo", 160);
+    adicionarTipoQuarto("Triplo", 240);
+    adicionarTipoQuarto("Casal", 180);
+    adicionarTipoQuarto("Apartamento", 250);
 
-    adicionarQuarto("301", "Platina");
-    adicionarQuarto("101", "Bronze");
-    adicionarQuarto("207", "Platina");
-    adicionarQuarto("001", "Prata");
-    adicionarQuarto("405", "Ouro");
-    adicionarQuarto("302", "Bronze");
-    adicionarQuarto("507", "Bronze");
+    adicionarQuarto("301", "Duplo");
+    adicionarQuarto("101", "Solteiro");
+    adicionarQuarto("207", "Triplo");
+    adicionarQuarto("001", "Casal");
+    adicionarQuarto("405", "Apartamento");
+    adicionarQuarto("302", "Duplo");
+    adicionarQuarto("507", "Solteiro");
 
     adicionarServico("Aluguel de carro de luxo", 300);
     adicionarServico("Seguro para carro de luxo", 100);
     adicionarServico("Aluguel de carro executivo", 150);
     adicionarServico("Seguro para carro executivo", 100);
     adicionarServico("Tanque cheio", 300);
-    adicionarServico("Babysitter", 100);*/
+    adicionarServico("Babysitter", 100);
 
-    DATA reserva_inicio = {2, 3, 2013};
-    DATA reserva_fim = {5, 3, 2013};
+    reservarQuarto("75429843067", "101", (DATA) {9, 12, 2018}, (DATA) {1, 1, 2019});
+    reservarQuarto("52901248020", "301", (DATA) {9, 12, 2018}, (DATA) {15, 12, 2018});
+    reservarQuarto("19753735043", "207", (DATA) {9, 12, 2018}, (DATA) {11, 12, 2018});
+    reservarQuarto("04513040041", "405", (DATA) {9, 12, 2018}, (DATA) {1, 3, 2019});
 
-    //reservarQuarto("75429843067", "101", reserva_inicio, reserva_fim);
-    //reservarQuarto("75429843067", "101", (DATA) {28, 12, 2011}, (DATA) {1, 3, 2012});
-
-    RESERVA *reserva = pegarReserva("75429843067");
-    printf("%d/%d/%d\n", reserva->inicio.dia, reserva->inicio.mes, reserva->inicio.ano);
-    printf("%d/%d/%d\n", reserva->fim.dia, reserva->fim.mes, reserva->fim.ano);
-
-    //liberarReserva("75429843067");
-    printf("%s\n", disponibilidadeQuarto("101", reserva_inicio, reserva_fim) ? "Disponivel" : "Nao disponivel");
-
-    /*GSList *datas = gerarDatas(reserva_inicio, reserva_fim);
-    DATA *data_aux;
-    GSList *d = NULL;
-    for(d = datas; d != NULL; d = d->next) {
-        data_aux = (DATA*) d->data;
-        printf("%d/%d/%d\n", data_aux->dia, data_aux->mes, data_aux->ano);
-    }*/
-
-    //printf("%s\n", criarContrato("75429843067", "101", reserva_inicio, reserva_fim) == 1 ? "Contrato criado com sucesso!" : "Erro ao criar contrato!");
-
-
-    //adicionarServicoContratado("75429843067", "Aluguel de carro de luxo", 1);
-    //adicionarServicoContratado("75429843067", "Tanque cheio", 1);
-
-    //SERVICO_CONTRATADO *servico_c = pegarServicoContratado("75429843067", "Tanque cheio");
-    //alterarServicoContratado("75429843067", "Tanque cheio", 2);
-    //printf("%s %s %d\n", servico_c->cpf, servico_c->tipo, servico_c->quantidade);
-
-    //printf("%d\n", totalDias(reserva_inicio, reserva_fim));
-
-    gchar **data = NULL;
-    quebra_string("18/05/1989", '/', &data);
-    printf("%d/%d/%d\n", atoi(data[0]), atoi(data[1]), atoi(data[2]));
-
-    printf("%s\n", pegarCpfCliente("Gustavo Silva"));
+    adicionarServicoContratado("75429843067", "Aluguel de carro de luxo", 1);
+    adicionarServicoContratado("75429843067", "Tanque cheio", 1);*/
 
     icons = g_list_append(icons, gdk_pixbuf_new_from_file("./img/icon-16.png", NULL));
     icons = g_list_append(icons, gdk_pixbuf_new_from_file("./img/icon-32.png", NULL));
@@ -266,7 +240,7 @@ static void janelaPrincipal(GtkApplication *app, gpointer data) {
 
     btn_checkin = criarBotao(btn_checkin, "Checkin", box, G_CALLBACK(janelaCheckin), NULL);
     btn_checkout = criarBotao(btn_checkout, "Checkout", box, G_CALLBACK(janelaCheckout), NULL);
-    btn_servicos = criarBotao(btn_servicos, "Serviços", box, G_CALLBACK(janelaServicos), NULL);
+    btn_servicos = criarBotao(btn_servicos, "Serviços", box, G_CALLBACK(janelaContratarServicos), NULL);
     btn_sair = criarBotao(btn_sair, "Sair", box, G_CALLBACK(fecharJanela), window);
 
     gtk_container_add(GTK_CONTAINER(window), box);
@@ -1343,7 +1317,6 @@ static void acaoFazerCheckin(GtkApplication *app, gpointer data) {
 
     RESERVA *reserva = pegarReserva(cpf);
     if((selection != NULL)) {
-        model = gtk_tree_view_get_model(GTK_TREE_VIEW(lista_checkin));
         gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model, &iter);
         liberarReserva(cpf);
     }
@@ -1357,6 +1330,7 @@ static void acaoFazerCheckin(GtkApplication *app, gpointer data) {
         gtk_list_store_set(store, &iter, COL_INICIO_R, inicio, -1);
         gtk_list_store_set(store, &iter, COL_FIM_R, fim, -1);
         if(selection != NULL) {
+            model = gtk_tree_view_get_model(GTK_TREE_VIEW(lista_checkin));
             gtk_list_store_remove(store, &iter);
             gtk_tree_selection_select_iter(GTK_TREE_SELECTION(selection), &iter);
         }
@@ -1450,13 +1424,12 @@ static void janelaFazerCheckout(GtkApplication *app, gpointer selection) {
     DATA data_fim = (DATA) {atoi(data_fim_aux[0]), atoi(data_fim_aux[1]), atoi(data_fim_aux[2])};
 
     gfloat total = valorQuarto(quarto_value) * totalDias(data_inicio, data_fim);
+    total += totalServicosContratados(cpf_value);
 
     char total_str[50] = "";
     sprintf(total_str, "Total a pagar:\nR$ %.2f\n", total);
 
     label_fim = gtk_label_new(total_str);
-
-    fim = gtk_entry_new();
     gtk_box_pack_start(GTK_BOX(box), label_fim, TRUE, TRUE, 0);
 
     confirmar = gtk_button_new_with_label("Confirmar");
@@ -1498,12 +1471,113 @@ static void acaoFazerCheckout(GtkApplication *app, gpointer data) {
 
     RESERVA *reserva = pegarReserva(cpf);
     if((selection != NULL)) {
-        model = gtk_tree_view_get_model(GTK_TREE_VIEW(lista_checkin));
         gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model, &iter);
+        model = gtk_tree_view_get_model(GTK_TREE_VIEW(lista_checkin));
         gtk_list_store_remove(store, &iter);
         gtk_tree_selection_select_iter(GTK_TREE_SELECTION(selection), &iter);
         liberarReserva(cpf);
     }
 
     fecharJanela(NULL, janela_checkout);
+}
+
+static void janelaContratarServicos(GtkApplication *app, gpointer data) {
+    GtkTreeSelection *selection;
+    GtkWidget *window = NULL;
+    GtkWidget *scroll_window;
+    GtkWidget *vbox, *hbox;
+    GtkWidget *btn_contratar = NULL, *btn_remover = NULL, *btn_editar = NULL, *btn_fechar = NULL;
+
+    window = criarJanela(window, "Contratar Serviços", 470, 370);
+    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
+
+    lista_servicos = gtk_tree_view_new();
+    gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lista_servicos), TRUE);
+    renderizarListaServicos();
+    selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lista_servicos));
+
+    scroll_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll_window), GTK_SHADOW_ETCHED_IN);
+    gtk_container_add(GTK_CONTAINER(scroll_window), lista_servicos);
+
+    vbox = gtk_box_new(FALSE, 0);
+    gtk_orientable_set_orientation(GTK_ORIENTABLE(vbox), GTK_ORIENTATION_VERTICAL);
+    gtk_box_pack_start(GTK_BOX(vbox), scroll_window, TRUE, TRUE, 5);
+
+    hbox = gtk_box_new(FALSE, 5);
+    gtk_orientable_set_orientation(GTK_ORIENTABLE(hbox), GTK_ORIENTATION_HORIZONTAL);
+
+    btn_contratar = criarBotao(btn_contratar, "Contratar", hbox, G_CALLBACK(janelaContratarServico), selection);
+    btn_fechar = criarBotao(btn_fechar, "Fechar", hbox, G_CALLBACK(fecharJanela), window);
+
+    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
+    gtk_container_add(GTK_CONTAINER(window), vbox);
+
+    gtk_widget_show_all(window);
+}
+
+static void janelaContratarServico(GtkApplication *app, gpointer selection) {
+    GtkListStore *store;
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+    GtkWidget *box;
+    GtkWidget *cliente;
+    GtkWidget *confirmar;
+    gchar *tipo_value;
+
+    janela_contratar_servico = NULL;
+
+    janela_contratar_servico = criarJanela(janela_contratar_servico, "Contratar Serviço", 0, 0);
+    gtk_container_set_border_width(GTK_CONTAINER(janela_contratar_servico), 10);
+
+    store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(lista_servicos)));
+    model = gtk_tree_view_get_model(GTK_TREE_VIEW(lista_servicos));
+    if(gtk_tree_selection_get_selected(GTK_TREE_SELECTION(selection), &model, &iter)) {
+        gtk_tree_model_get(store, &iter, COL_TIPO_S, &tipo_value,  -1);
+    }
+
+    box = gtk_box_new(TRUE, 5);
+    gtk_container_set_border_width (GTK_CONTAINER(box), 30);
+
+    cliente = gtk_combo_box_text_new();
+
+    GSList *aux = NULL;
+    CLIENTE *cliente_aux;
+    for(aux = clientes; aux != NULL; aux = aux->next) {
+        cliente_aux = (CLIENTE*) aux->data;
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(cliente), cliente_aux->nome);
+    }
+    g_slist_free(aux);
+
+    gtk_box_pack_start(GTK_BOX(box), cliente, TRUE, TRUE, 0);
+
+    confirmar = gtk_button_new_with_label("Confirmar");
+    gtk_box_pack_start(GTK_BOX(box), confirmar, TRUE, TRUE, 0);
+
+    GSList *fields = NULL;
+    fields = g_slist_append(fields, selection);
+    fields = g_slist_append(fields, cliente);
+    fields = g_slist_append(fields, tipo_value);
+
+    g_signal_connect(G_OBJECT(confirmar), "clicked", G_CALLBACK(acaoContratarServico), fields);
+
+    gtk_container_add(GTK_CONTAINER(janela_contratar_servico), box);
+    gtk_widget_show_all(janela_contratar_servico);
+}
+
+static void acaoContratarServico(GtkApplication *app, gpointer data) {
+    GtkListStore *store;
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    gpointer *selection = g_slist_nth_data(data, 0);
+    gchar *cliente = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(g_slist_nth_data(data, 1)));
+    gchar *tipo = g_slist_nth_data(data, 2);
+
+    if((selection != NULL)) {
+        adicionarServicoContratado(pegarCpfCliente(cliente), tipo, 1);
+    }
+
+    fecharJanela(NULL, janela_contratar_servico);
 }

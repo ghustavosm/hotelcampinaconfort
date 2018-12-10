@@ -789,13 +789,6 @@ gint carregarServicos(void) {
     return retorno;
 }
 
-
-
-
-
-
-
-
 SERVICO_CONTRATADO *pegarServicoContratado(gchar cpf[], gchar tipo[]) {
     GSList *s = NULL;
     SERVICO_CONTRATADO *servico = NULL;
@@ -829,8 +822,8 @@ gint posicaoServicoContratado(gchar tipo[]) {
 }
 
 gint adicionarServicoContratado(gchar cpf[], gchar tipo[], gint quantidade) {
-    gint retorno = pegarServicoContratado(cpf, tipo) ? -1 : 1;
-    gint i;
+    SERVICO_CONTRATADO *servico = pegarServicoContratado(cpf, tipo);
+    gint retorno = servico ? -1 : 1;
     if(retorno == 1) {
         SERVICO_CONTRATADO *servico = g_new(SERVICO_CONTRATADO, 1);
         sprintf(servico->cpf, "%s", cpf);
@@ -838,6 +831,8 @@ gint adicionarServicoContratado(gchar cpf[], gchar tipo[], gint quantidade) {
         servico->quantidade = quantidade;
         servicos_contratados = g_slist_insert_sorted(servicos_contratados, servico, (GCompareFunc) compararServicosContratados);
         retorno = salvarServicosContratados();
+    } else {
+        retorno = alterarServicoContratado(cpf, tipo, servico->quantidade + quantidade);
     }
     return retorno;
 }
@@ -857,6 +852,20 @@ gint alterarServicoContratado(gchar cpf[], gchar tipo[], gint quantidade) {
         retorno = salvarServicosContratados();
     }
     return retorno;
+}
+
+gfloat totalServicosContratados(gchar cpf[]) {
+    gfloat total = 0.0;
+    GSList *s = NULL;
+    SERVICO_CONTRATADO *servico;
+    for(s = servicos_contratados; s != NULL; s = s->next) {
+        servico = (SERVICO_CONTRATADO*) s->data;
+        if(strcmp(servico->cpf, cpf) == 0) {
+            total += valorServico(servico->tipo) * ((gfloat) servico->quantidade);
+        }
+    }
+    g_slist_free(s);
+    return total;
 }
 
 gint removerServicoContratado(gchar cpf[], gchar tipo[]) {

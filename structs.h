@@ -94,6 +94,16 @@ gint salvarServicos(void);
 gint carregarServicos(void);
 void imprimirServicos(void);
 
+SERVICO_CONTRATADO *pegarServicoContratado(gchar cpf[], gchar tipo[]);
+gint compararServicosContratados(SERVICO_CONTRATADO *a, SERVICO_CONTRATADO *b);
+gint posicaoServicoContratado(gchar tipo[]);
+gint adicionarServicoContratado(gchar cpf[], gchar tipo[], gint quantidade);
+gint alterarServicoContratado(gchar cpf[], gchar tipo[], gint quantidade);
+gfloat totalServicosContratados(gchar cpf[]);
+gint removerServicoContratado(gchar cpf[], gchar tipo[]);
+gint salvarServicosContratados(void);
+gint carregarServicosContratados(void);
+
 /*CONTRATO *pegarContrato(gchar cpf[]);
 gint criarContrato(gchar cpf[], gchar quarto[], DATA inicio, DATA fim);
 gint terminarContrato(gchar cpf[], gchar quarto[], DATA inicio, DATA fim);
