@@ -44,9 +44,15 @@ typedef struct {
     DATA fim;
 } CONTRATO;
 
-gint diaDoAno(int dia, int mes, int ano);
+gint quebra_string(const gchar *str, gchar c, gchar ***arr);
+gint anoBissexto(gint ano);
+gint diasDoMes(gint mes, gint ano);
+gint diaDoAno(DATA data);
+GSList *gerarDatas(DATA data_inicio, DATA data_fim);
+gint totalDias(DATA data_inicio, DATA data_fim);
 
 CLIENTE *pegarCliente(gchar cpf[]);
+gchar *pegarCpfCliente(gchar nome[]);
 gint compararClientes(CLIENTE *a, CLIENTE *b);
 gint posicaoCliente(gchar nome[]);
 gint adicionarCliente(gchar nome[], gchar cpf[], gchar endereco[]);
@@ -73,10 +79,10 @@ gfloat valorQuarto(gchar numero[]);
 gint salvarQuartos(void);
 gint carregarQuartos(void);
 
-RESERVA *pegarReserva(gchar cpf[], gchar quarto[]);
+RESERVA *pegarReserva(gchar cpf[]);
 gint reservarQuarto(gchar cpf[], gchar quarto[], DATA inicio, DATA fim);
 gboolean disponibilidadeQuarto(gchar numero[], DATA inicio, DATA fim);
-gint liberarQuarto(gchar quarto[], DATA inicio, DATA fim);
+gint liberarReserva(gchar cpf[]);
 gint salvarReservas(void);
 gint carregarReservas(void);
 

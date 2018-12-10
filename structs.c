@@ -65,6 +65,64 @@ GSList *servicos = NULL;
 GSList *servicos_contratados = NULL;
 GSList *contratos = NULL;
 
+gint quebra_string(const gchar *str, gchar c, gchar ***arr) {
+    gint count = 1;
+    gint token_len = 1;
+    gint i = 0;
+    gchar *p;
+    gchar *t;
+
+    p = (gchar*) str;
+    while(*p != '\0') {
+        if(*p == c) {
+            count++;
+		}
+        p++;
+    }
+
+    *arr = (gchar**) malloc(sizeof(gchar*) * count);
+    if(*arr == NULL) {
+		exit(1);
+	}
+
+    p = (gchar*) str;
+    while(*p != '\0') {
+        if(*p == c) {
+            (*arr)[i] = (gchar*) malloc(sizeof(gchar) * token_len);
+            if((*arr)[i] == NULL) {
+                exit(1);
+			}
+            token_len = 0;
+            i++;
+        }
+        p++;
+        token_len++;
+    }
+    (*arr)[i] = (gchar*) malloc(sizeof(gchar) * token_len);
+    if((*arr)[i] == NULL) {
+        exit(1);
+	}
+
+    i = 0;
+    p = (gchar*) str;
+    t = ((*arr)[i]);
+    while(*p != '\0') {
+        if(*p != c && *p != '\0') {
+            *t = *p;
+            t++;
+        }
+        else {
+			*t = '\0';
+            i++;
+            t = ((*arr)[i]);
+        }
+        p++;
+    }
+
+	*t = '\0';
+    return count;
+}
+
 gint anoBissexto(gint ano) {
     return (ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0);
 }
@@ -114,6 +172,11 @@ GSList *gerarDatas(DATA data_inicio, DATA data_fim) {
     return datas;
 }
 
+gint totalDias(DATA data_inicio, DATA data_fim) {
+    GSList *datas = gerarDatas(data_inicio, data_fim);
+    return g_slist_length(datas);
+}
+
 CLIENTE *pegarCliente(gchar cpf[]) {
     GSList *c = NULL;
     CLIENTE *cliente = NULL;
@@ -126,6 +189,34 @@ CLIENTE *pegarCliente(gchar cpf[]) {
         }
     }
     return cliente;
+}
+
+gchar *pegarCpfCliente(gchar nome[]) {
+    GSList *c = NULL;
+    CLIENTE *cliente = NULL;
+    CLIENTE *aux;
+    for(c = clientes; c != NULL; c = c->next) {
+        aux = (CLIENTE*) c->data;
+        if(strcmp(aux->nome, nome) == 0) {
+            cliente = aux;
+            break;
+        }
+    }
+    return cliente->cpf;
+}
+
+gchar *pegarNomeCliente(gchar cpf[]) {
+    GSList *c = NULL;
+    CLIENTE *cliente = NULL;
+    CLIENTE *aux;
+    for(c = clientes; c != NULL; c = c->next) {
+        aux = (CLIENTE*) c->data;
+        if(strcmp(aux->cpf, cpf) == 0) {
+            cliente = aux;
+            break;
+        }
+    }
+    return cliente->nome;
 }
 
 gint compararClientes(CLIENTE *a, CLIENTE *b) {
@@ -456,13 +547,13 @@ gint carregarQuartos(void) {
     return retorno;
 }
 
-RESERVA *pegarReserva(gchar cpf[], gchar quarto[]) {
+RESERVA *pegarReserva(gchar cpf[]) {
     GSList *r = NULL;
     RESERVA *reserva = NULL;
     RESERVA *aux;
     for(r = reservas; r != NULL; r = r->next) {
         aux = (RESERVA*) r->data;
-        if((strcmp(aux->cpf, cpf) == 0) && (strcmp(aux->quarto, quarto) == 0)) {
+        if((strcmp(aux->cpf, cpf) == 0)) {
             reserva = aux;
             break;
         }
@@ -470,15 +561,36 @@ RESERVA *pegarReserva(gchar cpf[], gchar quarto[]) {
     return reserva;
 }
 
+gint compararReservas(RESERVA *a, RESERVA *b) {
+    return strcmp(pegarNomeCliente(a->cpf), pegarNomeCliente(b->cpf));
+}
+
+gint posicaoReserva(gchar cpf[]) {
+    GSList *r = NULL;
+    RESERVA *reserva;
+    gint posicao = 0;
+    for(r = reservas; r != NULL; r = r->next) {
+        reserva = (RESERVA*) r->data;
+        if(strcmp(pegarNomeCliente(reserva->cpf), pegarNomeCliente(cpf)) >= 0) {
+            break;
+        }
+        posicao++;
+    }
+    return posicao;
+}
+
 gint reservarQuarto(gchar cpf[], gchar quarto[], DATA inicio, DATA fim) {
-    gint retorno = disponibilidadeQuarto(quarto, inicio, fim) ? 1 : -1;
+    gint retorno = pegarReserva(cpf) ? -1 : 1;
+    if(retorno == 1) {
+        retorno = disponibilidadeQuarto(quarto, inicio, fim) ? 1 : -2;
+    }
     if(retorno == 1) {
         RESERVA *reserva = g_new(RESERVA, 1);
         sprintf(reserva->cpf, "%s", cpf);
         sprintf(reserva->quarto, "%s", quarto);
         reserva->inicio = inicio;
         reserva->fim = fim;
-        reservas = g_slist_append(reservas, reserva);
+        reservas = g_slist_insert_sorted(reservas, reserva, (GCompareFunc) compararReservas);
         retorno = salvarReservas();
     }
     return retorno;
@@ -509,16 +621,14 @@ gboolean disponibilidadeQuarto(gchar quarto[], DATA inicio, DATA fim) {
 	return retorno;
 }
 
-gint liberarQuarto(gchar quarto[], DATA inicio, DATA fim) {
+gint liberarReserva(gchar cpf[]) {
     gboolean retorno = 0;
     GSList *r = NULL;
     RESERVA *reserva = NULL;
     RESERVA *aux;
     for(r = reservas; r != NULL; r = r->next) {
         aux = (RESERVA*) r->data;
-        if((strcmp(aux->quarto, quarto) == 0) &&
-           aux->inicio.dia == inicio.dia && aux->inicio.mes == inicio.mes && aux->inicio.ano == inicio.ano &&
-           aux->fim.dia == fim.dia && aux->fim.mes == fim.mes && aux->fim.ano == fim.ano) {
+        if((strcmp(aux->cpf, cpf) == 0)) {
             reservas = g_slist_delete_link(reservas, r);
             retorno = salvarReservas();
             break;
@@ -807,103 +917,3 @@ gint carregarServicosContratados(void) {
     fclose(arquivo);
     return retorno;
 }
-
-
-
-
-
-
-
-/*
-CONTRATO *pegarContrato(gchar cpf[]) {
-    GSList *c = NULL;
-    CONTRATO *contrato = NULL;
-    CONTRATO *aux;
-    for(c = contratos; c != NULL; c = c->next) {
-        aux = (CONTRATO*) c->data;
-        if(strcmp(aux->cpf, cpf) == 0) {
-            contrato = aux;
-            break;
-        }
-    }
-    return contrato;
-}
-
-gint criarContrato(gchar cpf[], gchar quarto[], DATA inicio, DATA fim) {
-    gint retorno = 0;
-    if(pegarContrato(cpf) == NULL) {
-        retorno = reservarQuarto(cpf, quarto, inicio, fim) ? 1 : -1;
-    }
-    if(retorno == 1) {
-        CONTRATO *contrato = g_new(CONTRATO, 1);
-        sprintf(contrato->cpf, "%s", cpf);
-        sprintf(contrato->quarto, "%s", quarto);
-        contrato->inicio = inicio;
-        contrato->fim = fim;
-        contratos = g_slist_append(contratos, contrato);
-        retorno = salvarContratos();
-    }
-    return retorno;
-}
-
-gint terminarContrato(gchar cpf[], gchar quarto[], DATA inicio, DATA fim) {
-    gint retorno =  0;
-    if(pegarContrato(cpf) != NULL) {
-        retorno = liberarQuarto(quarto, inicio, fim) ? 1 : -1;
-    }
-    if(retorno == 1) {
-        GSList *c = NULL;
-        CONTRATO *contrato;
-        for(c = contratos; c != NULL; c = c->next) {
-            contrato = (CONTRATO*) c->data;
-            if(strcmp(contrato->cpf, cpf) == 0) {
-                contratos = g_slist_delete_link(contratos, c);
-            }
-        }
-        g_slist_free(c);
-        retorno = salvarContratos();
-    }
-    return retorno;
-}
-
-gint salvarContratos(void) {
-    FILE *arquivo;
-    GSList *c = NULL;
-    CONTRATO *contrato = g_new(CONTRATO, 1);
-    gint retorno = 0;
-
-    if ((arquivo = fopen(NOME_ARQUIVO_CONTRATOS, "w")) != NULL) {
-        for(c = contratos; c != NULL; c = c->next) {
-            contrato = (CONTRATO*) c->data;
-            fwrite(contrato, sizeof(CONTRATO), 1, arquivo);
-        }
-        retorno = 1;
-    }
-
-    fclose(arquivo);
-    g_slist_free(c);
-    return retorno;
-}
-
-gint carregarContratos(void) {
-    FILE *arquivo;
-    CONTRATO *contrato;
-    gint retorno = 1;
-
-    if((arquivo = fopen(NOME_ARQUIVO_CONTRATOS, "r")) == NULL) {
-        if((arquivo = fopen(NOME_ARQUIVO_CONTRATOS, "w")) == NULL) {
-            retorno = 0;
-        }
-    }
-
-    while(TRUE) {
-        contrato = g_new(CONTRATO, 1);
-        if(fread(contrato, sizeof(CONTRATO), 1, arquivo)) {
-            contratos = g_slist_append(contratos, contrato);
-        } else {
-            break;
-        }
-    }
-    fclose(arquivo);
-    return retorno;
-}*/
